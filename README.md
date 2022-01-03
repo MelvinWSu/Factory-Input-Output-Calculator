@@ -21,10 +21,14 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 •	Some kind of flowchart API
 
+•	Google Login API
+
 ## Development Steps
 
 1.	Two inputs, output bottleneck result
 2.	Multiple inputs, output crafting time
 3.	Graph generation
-4.	Multiple output support
-5.	Multi-stage crafting
+4.	Login Creation/Support
+5.	Multiple output support
+6.	Multi-stage crafting
+7.	Save to profile
