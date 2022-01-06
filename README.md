@@ -17,6 +17,8 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 •	React Bootstrap
 
+•	Sass
+
 •	Firebase
 
 •	Some kind of flowchart API
