@@ -7,6 +7,7 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 ## Goal
 
 •	Allows the user to type into fields the input item(s), the rate of arrival, the number needed to craft the output, and the time it takes to craft the output. The app will generate a chart with all the input/output info along with any bottlenecks.
+
 •	Build a website you can log in to save and load previous calculations
 
 ## Platform
