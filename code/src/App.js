@@ -28,6 +28,18 @@ function getFormInput() {
   console.log(document.getElementById("output-name").value);
   console.log(document.getElementById("output-crafting-time").value);
   console.log(document.getElementById("output-crafting-time-units").value);
+
+  console.log(parseInt(document.getElementById("input-time").value) * parseInt(document.getElementById("input-needed").value));
+  console.log(document.getElementById("input2-time").value * document.getElementById("input2-needed").value);
+
+  //for each input, get rate * needed vs output crafting time
+  if(document.getElementById("input-time").value * document.getElementById("input-needed").value > document.getElementById("output-crafting-time").value)  {
+    console.log("input 1: not enough flow");
+  }
+
+  if(document.getElementById("input2-time").value * document.getElementById("input2-needed").value > document.getElementById("output-crafting-time").value)  {
+    console.log("input 2: not enough flow");
+  }
 }
 
 function App() {
