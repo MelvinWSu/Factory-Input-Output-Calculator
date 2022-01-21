@@ -16,15 +16,19 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 ## Tools
 
-•	React Bootstrap
+•	React Bootstrap (Front-end framework)
+
+• Javascript/JSX (Back-end framework)
+ 
+• React Hooks (dynamic forms)
 
 •	Sass
 
-•	Firebase
+•	Firebase (Online database and account manager)
 
-•	Some kind of flowchart API
+•	Some kind of flowchart API (Output results in an easy to interpet format)
 
-•	Google Login API
+•	Google Login API 
 
 ## Development Steps
 
@@ -35,3 +39,8 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 5.	Multiple output support
 6.	Multi-stage crafting
 7.	Save to profile
+
+## Future Plans
+ 
+1. Implement system to automatically search for pre-requisite recipies needed
+2. Upload all recipies to online database
