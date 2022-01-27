@@ -128,11 +128,21 @@ export default class Comparison extends Component {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
     this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.time + ' ' + element.time_units));
     var [input_array, output_array] = [this.state.inputs, this.state.outputs];
-    console.log(input_array);
-    console.log(output_array);
+    if (input_array.every(element => element.flow > output_array[0].time)) {
+      console.log("output crafting too slow")
+      this.setState({ result: "output crafting too slow" });
+    }
+    else if (input_array.some(element => element.flow < output_array[0].time)) {
+      console.log("an input has too few flow")
+      this.setState({ result: "an input has too few flow" })
+    }
+    else {
+      console.log("all good")
+      this.setState({ result: "all good" })
+    }
     event.preventDefault();
   }
-
+  //todo: add crafting quantity
   render() {
     return (
       ///Navbar
@@ -183,6 +193,7 @@ export default class Comparison extends Component {
             <span class="h4">Result</span>
           </div>
           <div class="col-12">
+            {this.state.result}
           </div>
         </div>
       </Container>
