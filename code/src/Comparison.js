@@ -13,25 +13,25 @@ export default class Comparison extends Component {
     this.state = {
       result: '',
       inputs: [],
-      input_count: 1,
+      outputs: [],
     }
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  createUI() {
+  createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Input #2</span>
-          <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i)}>Remove</Button>
+          <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</Button>
         </div>
         <div class="col-4">
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Name</span>
             </div>
-            <input type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i)} required></input>
+            <input type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
         <div class="col-4">
@@ -39,9 +39,9 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Flow</span>
             </div>
-            <input type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i)} required></input>
+            <input type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
             <span class="input-group-text" id="basic-addon">per</span>
-            <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i)}>
+            <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
               <option value="1">Miliseconds</option>
               <option value="2" >Seconds</option>
@@ -52,39 +52,85 @@ export default class Comparison extends Component {
         <div class="col-4">
           <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon"># Needed</span>
-            <input type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i)} required></input>
+            <input type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
       </div>
-
     )
   }
 
-  handleChange(i, event) {
+  createOutputEntry() {
+    return this.state.outputs.map(({ output_name, time, time_units }, i) =>
+      <div class="row" key={i}>
+        <div class="col-12">
+          <span class="header h4">Output #1</span>
+          <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</Button>
+        </div>
+        <div class="col-4">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon">Name</span>
+            </div>
+            <input type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon">Crafting Time</span>
+            </div>
+            <input type="number" name="time" value={time || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <select class="form-select" name="time_units" value={time_units || ''} onChange={this.handleChange.bind(this, i, "output")}>
+              <option>Choose...</option>
+              <option value="1">Miliseconds</option>
+              <option value="2">Seconds</option>
+              <option value="3">Minutes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  handleChange(i, form_type, event) {
     const { name, value } = event.target;
-    const inputs = [...this.state.inputs];
-    inputs[i] = { ...inputs[i], [name]: value };
-    this.setState({ inputs });
+    if (form_type === "input") {
+      const inputs = [...this.state.inputs];
+      inputs[i] = { ...inputs[i], [name]: value };
+      this.setState({ inputs });
+    }
+    else if (form_type === "output") {
+      const outputs = [...this.state.outputs];
+      outputs[i] = { ...outputs[i], [name]: value };
+      this.setState({ outputs });
+    }
   }
 
-  addClick() {
-    this.setState(prevState => ({ inputs: [...prevState.inputs, ''] }))
+  addClick(form_type) {
+    if (form_type === "input") { this.setState(prevState => ({ inputs: [...prevState.inputs, ''] })) }
+    else if (form_type === "output") { this.setState(prevState => ({ outputs: [...prevState.outputs, ''] })) }
   }
 
-  removeClick(i) {
-    let inputs = [...this.state.inputs];
-    inputs.splice(i, 1);
-    this.setState({ inputs });
+  removeClick(i, form_type) {
+    if (form_type === "input") {
+      let inputs = [...this.state.inputs];
+      inputs.splice(i, 1);
+      this.setState({ inputs });
+    }
+    else if (form_type === "output") {
+      let outputs = [...this.state.outputs];
+      outputs.splice(i, 1);
+      this.setState({ outputs });
+    }
   }
 
   handleSubmit(event) {
-    this.state.inputs.forEach(element => alert(element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
-    var input_array = this.state.inputs;
+    this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
+    this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.time + ' ' + element.time_units));
+    var [input_array, output_array] = [this.state.inputs, this.state.outputs];
+    console.log(input_array);
+    console.log(output_array);
     event.preventDefault();
-  }
-
-  onClick = getInput => {
-    this.getForm()
   }
 
   render() {
@@ -117,38 +163,16 @@ export default class Comparison extends Component {
           </div>
         </div>
         <form onSubmit={this.handleSubmit}>
-        {this.createUI()}
+          {this.createInputEntry()}
           <div class="row">
-            
             <div class="col-12">
-              <Button value='add more' onClick={this.addClick.bind(this)}>Add Input</Button>
+              <Button value='addinput' onClick={this.addClick.bind(this, "input")}>Add Input</Button>
             </div>
           </div>
-
+          {this.createOutputEntry()}
           <div class="row">
             <div class="col-12">
-              <span class="header h4">Output #1</span>
-            </div>
-            <div class="col-4">
-              <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon">Name</span>
-                </div>
-                <input type="text" class="form-control" id="output-name" aria-describedby="basic-addon3" defaultValue="Eletronic Circuit" required></input>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon">Crafting Time</span>
-                </div>
-                <input type="number" class="form-control" id="output-crafting-time" aria-describedby="basic-addon3" defaultValue="1" required></input>
-                <select class="form-select" id="output-crafting-time-units" defaultValue="2">
-                  <option value="1">Miliseconds</option>
-                  <option value="2">Seconds</option>
-                  <option value="3">Minutes</option>
-                </select>
-              </div>
+              <Button value='addoutput' onClick={this.addClick.bind(this, "output")}>Add Output</Button>
             </div>
           </div>
           <Button type="submit" value="Submit">Calculate</Button>
@@ -159,7 +183,6 @@ export default class Comparison extends Component {
             <span class="h4">Result</span>
           </div>
           <div class="col-12">
-            {this.state.result}
           </div>
         </div>
       </Container>
