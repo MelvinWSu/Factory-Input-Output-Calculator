@@ -18,12 +18,12 @@ export default class Comparison extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-
+//todo: add page memory, add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
         <div class="col-12">
-          <span class="header h4">Input #2</span>
+          <span class="header h4">Input #{i}</span>
           <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</Button>
         </div>
         <div class="col-4">
@@ -59,11 +59,12 @@ export default class Comparison extends Component {
     )
   }
 
+  //todo: add output quantity
   createOutputEntry() {
     return this.state.outputs.map(({ output_name, time, time_units }, i) =>
       <div class="row" key={i}>
         <div class="col-12">
-          <span class="header h4">Output #1</span>
+          <span class="header h4">Output #{i}</span>
           <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</Button>
         </div>
         <div class="col-4">
@@ -123,7 +124,8 @@ export default class Comparison extends Component {
       this.setState({ outputs });
     }
   }
-
+//todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
+//add proper checks for no input or no output
   handleSubmit(event) {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
     this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.time + ' ' + element.time_units));
@@ -142,7 +144,8 @@ export default class Comparison extends Component {
     }
     event.preventDefault();
   }
-  //todo: add crafting quantity
+
+  //todo, fix remove button spacing, allow changing "Example Recipe" to custom title
   render() {
     return (
       ///Navbar
