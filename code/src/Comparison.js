@@ -14,11 +14,13 @@ export default class Comparison extends Component {
       result: '',
       inputs: [],
       outputs: [],
+      crafting_time: null,
+      crafting_time_units: null,
     }
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-//todo: add page memory, add default input/output count
+  //todo: add page memory, add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
@@ -31,7 +33,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Name</span>
             </div>
-            <input type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autocomplete="off" type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
         <div class="col-4">
@@ -39,7 +41,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Flow</span>
             </div>
-            <input type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autocomplete="off" type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
             <span class="input-group-text" id="basic-addon">per</span>
             <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
@@ -52,16 +54,15 @@ export default class Comparison extends Component {
         <div class="col-4">
           <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon"># Needed</span>
-            <input type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autocomplete="off" type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
       </div>
     )
   }
 
-  //todo: add output quantity
   createOutputEntry() {
-    return this.state.outputs.map(({ output_name, time, time_units }, i) =>
+    return this.state.outputs.map(({ output_name, output_quanity }, i) =>
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Output #{i}</span>
@@ -72,21 +73,15 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Name</span>
             </div>
-            <input type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input autocomplete="off" type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
         <div class="col-4">
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon">Crafting Time</span>
+              <span class="input-group-text" id="basic-addon">Quantity</span>
             </div>
-            <input type="number" name="time" value={time || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
-            <select class="form-select" name="time_units" value={time_units || ''} onChange={this.handleChange.bind(this, i, "output")}>
-              <option>Choose...</option>
-              <option value="1">Miliseconds</option>
-              <option value="2">Seconds</option>
-              <option value="3">Minutes</option>
-            </select>
+            <input autocomplete="off" type="number" name="output_quanity" value={output_quanity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
       </div>
@@ -104,6 +99,9 @@ export default class Comparison extends Component {
       const outputs = [...this.state.outputs];
       outputs[i] = { ...outputs[i], [name]: value };
       this.setState({ outputs });
+    }
+    else {
+      this.setState({ [name]: value })
     }
   }
 
@@ -124,17 +122,18 @@ export default class Comparison extends Component {
       this.setState({ outputs });
     }
   }
-//todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
-//add proper checks for no input or no output
+  //todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
+  //add proper checks for no input or no output, factor time units
   handleSubmit(event) {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
-    this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.time + ' ' + element.time_units));
+    alert("crafting_time: " + this.state.crafting_time + ' ' + this.state.crafting_time_units)
+    this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.output_quanity));
     var [input_array, output_array] = [this.state.inputs, this.state.outputs];
-    if (input_array.every(element => element.flow > output_array[0].time)) {
+    if (input_array.every(element => element.flow > this.state.crafting_time)) {
       console.log("output crafting too slow")
       this.setState({ result: "output crafting too slow" });
     }
-    else if (input_array.some(element => element.flow < output_array[0].time)) {
+    else if (input_array.some(element => element.flow <  this.state.crafting_time)) {
       console.log("an input has too few flow")
       this.setState({ result: "an input has too few flow" })
     }
@@ -180,6 +179,24 @@ export default class Comparison extends Component {
           <div class="row">
             <div class="col-12">
               <Button value='addinput' onClick={this.addClick.bind(this, "input")}>Add Input</Button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Crafting Time</span>
+                </div>
+
+                <input autocomplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
+                <select class="form-select" name="crafting_time_units" value={this.state.crafting_time_units || ''} onChange={this.handleChange.bind(this, 0, "crafting_time_units")}>
+                  <option>Choose...</option>
+                  <option value="1">Miliseconds</option>
+                  <option value="2">Seconds</option>
+                  <option value="3">Minutes</option>
+                </select>
+              </div>
+
             </div>
           </div>
           {this.createOutputEntry()}
