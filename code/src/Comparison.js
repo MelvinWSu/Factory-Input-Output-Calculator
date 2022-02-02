@@ -20,7 +20,7 @@ export default class Comparison extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-  //todo: add page memory, add default input/output count
+  //todo: add page memory (for refreshing the page), add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
@@ -144,7 +144,7 @@ export default class Comparison extends Component {
     event.preventDefault();
   }
 
-  //todo, fix remove button spacing, allow changing "Example Recipe" to custom title
+  //todo, fix remove button spacing, allow changing "Example Recipe" into custom title
   render() {
     return (
       ///Navbar
