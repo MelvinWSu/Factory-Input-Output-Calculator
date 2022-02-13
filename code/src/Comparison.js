@@ -1,10 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Custom.css';
+import fire from './fire.js';
 
 import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+
+import { getDatabase, ref, set } from "firebase/database";
 
 export default class Comparison extends Component {
   constructor(props) {
@@ -141,7 +144,16 @@ export default class Comparison extends Component {
       console.log("all good")
       this.setState({ result: "all good" })
     }
+
     event.preventDefault();
+  }
+
+  //todo: login system to prevent unauthorized edits
+  testFirebase() {
+    const db = getDatabase();
+    set(ref(db, 'users/'), {
+      count: '1'
+    });
   }
 
   //todo, fix remove button spacing, allow changing "Example Recipe" into custom title
@@ -207,6 +219,7 @@ export default class Comparison extends Component {
           </div>
           <Button type="submit" value="Submit">Calculate</Button>
         </form>
+        <Button onClick={this.testFirebase.bind(this)}>Firebase</Button>
         <hr></hr>
         <div class="row">
           <div class="col-12">
