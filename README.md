@@ -24,11 +24,9 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 •	Sass
 
-•	Firebase (Online database and account manager)
+•	Firebase (Realtime Database, FirebaseUI)
 
 •	Some kind of flowchart API (Output results in an easy to interpet format)
-
-•	Google Login API 
 
 ## Development Steps
 
