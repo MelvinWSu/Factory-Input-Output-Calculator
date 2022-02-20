@@ -32,11 +32,11 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 1.	Two inputs, output bottleneck result
 2.	Multiple inputs
-3.	Graph generation
-4.	Login Creation/Support
-5.	Multiple output support
-6.	Multi-stage crafting
-7.	Save to profile
+3.	Login Creation/Support
+4.	Save to profile
+5.	Graph generation
+6.	Multiple output support
+7.	Multi-stage crafting
 
 ## Future Plans
  
