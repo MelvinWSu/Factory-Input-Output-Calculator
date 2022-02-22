@@ -24,21 +24,19 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 
 •	Sass
 
-•	Firebase (Online database and account manager)
+•	Firebase (Realtime Database, FirebaseUI)
 
 •	Some kind of flowchart API (Output results in an easy to interpet format)
-
-•	Google Login API 
 
 ## Development Steps
 
 1.	Two inputs, output bottleneck result
 2.	Multiple inputs
-3.	Graph generation
-4.	Login Creation/Support
-5.	Multiple output support
-6.	Multi-stage crafting
-7.	Save to profile
+3.	Login Creation/Support
+4.	Save to profile
+5.	Graph generation
+6.	Multiple output support
+7.	Multi-stage crafting
 
 ## Future Plans
  
