@@ -1,29 +1,56 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Custom.css';
-import fire from './fire.js';
 
+//React
 import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
-import { getDatabase, ref, set } from "firebase/database";
+//firebase database
+import { getDatabase, ref, set, push } from "firebase/database";
+
+//firebase auth
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  setPersistence
+} from "firebase/auth";
+import fire from "./fire.js"
+
+//Global variables
+const auth = getAuth()
 
 export default class Comparison extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
+      title: "Example Title",
       result: '',
       inputs: [],
       outputs: [],
       crafting_time: null,
       crafting_time_units: null,
+      login: null,
+      edit_mode: false,
     }
-
     this.handleSubmit = this.handleSubmit.bind(this);
+
   }
-  //todo: add page memory (for refreshing the page), add default input/output count
+  componentDidMount() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user)
+        this.setState({ login: user.email })
+      }
+    });
+  }
+
+  //todo: add page memory (keep input fields on pager refresh), add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
@@ -36,7 +63,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Name</span>
             </div>
-            <input autocomplete="off" type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autoComplete="off" type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
         <div class="col-4">
@@ -44,7 +71,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Flow</span>
             </div>
-            <input autocomplete="off" type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autoComplete="off" type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
             <span class="input-group-text" id="basic-addon">per</span>
             <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
@@ -57,7 +84,7 @@ export default class Comparison extends Component {
         <div class="col-4">
           <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon"># Needed</span>
-            <input autocomplete="off" type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input autoComplete="off" type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
       </div>
@@ -76,7 +103,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Name</span>
             </div>
-            <input autocomplete="off" type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input autoComplete="off" type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
         <div class="col-4">
@@ -84,7 +111,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Quantity</span>
             </div>
-            <input autocomplete="off" type="number" name="output_quanity" value={output_quanity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input autoComplete="off" type="number" name="output_quanity" value={output_quanity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
       </div>
@@ -136,7 +163,7 @@ export default class Comparison extends Component {
       console.log("output crafting too slow")
       this.setState({ result: "output crafting too slow" });
     }
-    else if (input_array.some(element => element.flow <  this.state.crafting_time)) {
+    else if (input_array.some(element => element.flow < this.state.crafting_time)) {
       console.log("an input has too few flow")
       this.setState({ result: "an input has too few flow" })
     }
@@ -145,18 +172,68 @@ export default class Comparison extends Component {
       this.setState({ result: "all good" })
     }
 
+    const user = auth.currentUser;
+    const db = getDatabase();
+
+    push(ref(db, 'users/' + user.uid), {
+      title: this.state.title,
+      inputs: this.state.inputs,
+      outputs: this.state.outputs,
+      crafting_time: this.state.crafting_time,
+      crafting_time_units: this.state.crafting_time_units
+    });
     event.preventDefault();
   }
 
-  //todo: login system to prevent unauthorized edits
-  testFirebase() {
-    const db = getDatabase();
-    set(ref(db, 'users/'), {
-      count: '1'
-    });
+  logout_function() {
+    auth.signOut().then(window.location.reload())
   }
 
-  //todo, fix remove button spacing, allow changing "Example Recipe" into custom title
+  render_dropdown() {
+    const user = auth.currentUser;
+    if (user !== null) {
+      return (
+        <NavDropdown.Item onClick={this.logout_function.bind(this)}>Logout</NavDropdown.Item>
+      )
+    }
+    else {
+      return (
+        <NavDropdown.Item href="/signin">Login</NavDropdown.Item>
+      )
+    }
+  }
+
+  title_edit() {
+    if (this.state.edit_mode) {
+      return (
+        <div class="col-12">
+          <div>
+            <input autoComplete="off" name="title" value={this.state.title || ''} onChange={this.handleChange.bind(this, 0, "title")}></input>
+            <Button value='save' onClick={this.end_title_edit.bind(this)}>Save</Button>
+          </div>
+        </div>
+      )
+    }
+    else {
+      return (
+        <div class="col-12">
+          <div>
+            <h1 class="header">{this.state.title}</h1>
+            <Button value='edit' onClick={this.start_title_edit.bind(this)}>Edit</Button>
+          </div>
+        </div>
+      )
+    }
+  }
+  start_title_edit() {
+    this.setState({edit_mode: true})
+  }
+
+  end_title_edit() {
+    this.setState({edit_mode: false})
+  }
+
+  //todo, fix remove button spacing
   render() {
     return (
       ///Navbar
@@ -169,12 +246,12 @@ export default class Comparison extends Component {
               <Nav className="me-auto">
               </Nav>
               <form class="form-inline my-2 my-lg-0">
-                <NavDropdown title="Options" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="#action/3.1">Account</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">Save As</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.3">Load</NavDropdown.Item>
+                <NavDropdown title={this.state.login} id="basic-nav-dropdown">
+                  <NavDropdown.Item >Account</NavDropdown.Item>
+                  <NavDropdown.Item >Save As</NavDropdown.Item>
+                  <NavDropdown.Item >Load</NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action/3.4">Logout</NavDropdown.Item>
+                  {this.render_dropdown()}
                 </NavDropdown>
               </form>
             </Navbar.Collapse>
@@ -182,9 +259,7 @@ export default class Comparison extends Component {
         </Navbar>
 
         <div class="row">
-          <div class="col-12">
-            <h1 class="header">Example Recipe</h1>
-          </div>
+          {this.title_edit()}
         </div>
         <form onSubmit={this.handleSubmit}>
           {this.createInputEntry()}
@@ -199,8 +274,7 @@ export default class Comparison extends Component {
                 <div class="input-group-prepend">
                   <span class="input-group-text">Crafting Time</span>
                 </div>
-
-                <input autocomplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
+                <input autoComplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
                 <select class="form-select" name="crafting_time_units" value={this.state.crafting_time_units || ''} onChange={this.handleChange.bind(this, 0, "crafting_time_units")}>
                   <option>Choose...</option>
                   <option value="1">Miliseconds</option>
@@ -208,7 +282,6 @@ export default class Comparison extends Component {
                   <option value="3">Minutes</option>
                 </select>
               </div>
-
             </div>
           </div>
           {this.createOutputEntry()}
@@ -219,7 +292,6 @@ export default class Comparison extends Component {
           </div>
           <Button type="submit" value="Submit">Calculate</Button>
         </form>
-        <Button onClick={this.testFirebase.bind(this)}>Firebase</Button>
         <hr></hr>
         <div class="row">
           <div class="col-12">

@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Custom.css';
 
 import Comparison from './Comparison';
+import SignInScreen from './firebaseui';
 
 import {
   BrowserRouter as Router,
@@ -20,6 +21,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route exact path="/" element={<Comparison/>} />
+        <Route path = "/signin" element={<SignInScreen/>}/>
       </Routes>
     </Router>
   )
