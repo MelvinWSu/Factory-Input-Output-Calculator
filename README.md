@@ -33,7 +33,7 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 1.	Two inputs, output bottleneck result
 2.	Multiple inputs
 3.	Login Creation/Support
-4.	Save to profile
+4.	Save to profile/ Load
 5.	Graph generation
 6.	Multiple output support
 7.	Multi-stage crafting
@@ -42,3 +42,4 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
  
 1. Implement system to automatically search for pre-requisite recipies needed
 2. Upload all recipies to online database
+3. Convert to online database
