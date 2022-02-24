@@ -27,8 +27,7 @@ const auth = getAuth()
 export default class Comparison extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
+    this.state =JSON.parse(window.localStorage.getItem('state')) ||  {
       title: "Example Title",
       result: '',
       inputs: [],
@@ -50,6 +49,11 @@ export default class Comparison extends Component {
     });
   }
 
+  setState(state) {
+    window.localStorage.setItem('state', JSON.stringify(this.state));
+    super.setState(state);
+  }
+  
   //todo: add page memory (keep input fields on pager refresh), add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
@@ -153,7 +157,7 @@ export default class Comparison extends Component {
     }
   }
   //todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
-  //add proper checks for no input or no output, factor time units
+  //add proper checks for no input or no output (including units), factor time units
   handleSubmit(event) {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
     alert("crafting_time: " + this.state.crafting_time + ' ' + this.state.crafting_time_units)
@@ -233,6 +237,10 @@ export default class Comparison extends Component {
     this.setState({edit_mode: false})
   }
 
+  check_local_storage() {
+    console.log(JSON.parse(localStorage.getItem("state")))
+  }
+
   //todo, fix remove button spacing
   render() {
     return (
@@ -301,6 +309,7 @@ export default class Comparison extends Component {
             {this.state.result}
           </div>
         </div>
+        <Button onClick={this.check_local_storage.bind(this)}>Check local storage</Button>
       </Container>
     );
   }
