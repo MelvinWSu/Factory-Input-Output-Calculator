@@ -30,8 +30,8 @@ export default class Comparison extends Component {
     this.state =JSON.parse(window.localStorage.getItem('state')) ||  {
       title: "Example Title",
       result: '',
-      inputs: [],
-      outputs: [],
+      inputs: ['',''],
+      outputs: [''],
       crafting_time: null,
       crafting_time_units: null,
       login: null,
@@ -54,7 +54,7 @@ export default class Comparison extends Component {
     super.setState(state);
   }
   
-  //todo: add page memory (keep input fields on pager refresh), add default input/output count
+  //todo: add default input/output count
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
@@ -241,6 +241,11 @@ export default class Comparison extends Component {
     console.log(JSON.parse(localStorage.getItem("state")))
   }
 
+  clear_local_storage() {
+    window.localStorage.clear();
+    console.log(JSON.parse(localStorage.getItem("state")))
+  }
+
   //todo, fix remove button spacing
   render() {
     return (
@@ -310,6 +315,7 @@ export default class Comparison extends Component {
           </div>
         </div>
         <Button onClick={this.check_local_storage.bind(this)}>Check local storage</Button>
+        <Button onClick={this.clear_local_storage.bind(this)}>Clear local storage</Button>
       </Container>
     );
   }
