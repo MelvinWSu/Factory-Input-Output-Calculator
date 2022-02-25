@@ -27,10 +27,10 @@ const auth = getAuth()
 export default class Comparison extends Component {
   constructor(props) {
     super(props);
-    this.state =JSON.parse(window.localStorage.getItem('state')) ||  {
+    this.state = JSON.parse(window.localStorage.getItem('state')) || {
       title: "Example Title",
       result: '',
-      inputs: ['',''],
+      inputs: ['', ''],
       outputs: [''],
       crafting_time: null,
       crafting_time_units: null,
@@ -53,8 +53,7 @@ export default class Comparison extends Component {
     window.localStorage.setItem('state', JSON.stringify(this.state));
     super.setState(state);
   }
-  
-  //todo: add default input/output count
+
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
@@ -100,7 +99,7 @@ export default class Comparison extends Component {
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Output #{i}</span>
-          <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</Button>
+          <Button class="text-right " value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</Button>
         </div>
         <div class="col-4">
           <div class="input-group mb-3">
@@ -157,7 +156,7 @@ export default class Comparison extends Component {
     }
   }
   //todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
-  //add proper checks for no input or no output (including units), factor time units
+  //todo: add proper check for field inputs, factor time units
   handleSubmit(event) {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
     alert("crafting_time: " + this.state.crafting_time + ' ' + this.state.crafting_time_units)
@@ -176,6 +175,13 @@ export default class Comparison extends Component {
       this.setState({ result: "all good" })
     }
 
+    event.preventDefault();
+  }
+
+  //todo: add login check
+  //todo: add proper check for field inputs
+  //todo: get firebase key to allow updating instead of pushing
+  uploadToFirebase() {
     const user = auth.currentUser;
     const db = getDatabase();
 
@@ -186,7 +192,7 @@ export default class Comparison extends Component {
       crafting_time: this.state.crafting_time,
       crafting_time_units: this.state.crafting_time_units
     });
-    event.preventDefault();
+    alert("Save successful")
   }
 
   logout_function() {
@@ -230,11 +236,11 @@ export default class Comparison extends Component {
     }
   }
   start_title_edit() {
-    this.setState({edit_mode: true})
+    this.setState({ edit_mode: true })
   }
 
   end_title_edit() {
-    this.setState({edit_mode: false})
+    this.setState({ edit_mode: false })
   }
 
   check_local_storage() {
@@ -278,7 +284,7 @@ export default class Comparison extends Component {
           {this.createInputEntry()}
           <div class="row">
             <div class="col-12">
-              <Button value='addinput' onClick={this.addClick.bind(this, "input")}>Add Input</Button>
+              <Button value='addinput' class="btn-success" onClick={this.addClick.bind(this, "input")}>Add Input</Button>
             </div>
           </div>
           <div class="row">
@@ -304,6 +310,7 @@ export default class Comparison extends Component {
             </div>
           </div>
           <Button type="submit" value="Submit">Calculate</Button>
+          <Button onClick={this.uploadToFirebase.bind(this)}>Save to Firebase</Button>
         </form>
         <hr></hr>
         <div class="row">
