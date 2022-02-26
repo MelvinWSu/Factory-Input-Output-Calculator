@@ -42,6 +42,5 @@ https://trello.com/b/qOaZfIJB/factory-calculator
 
 ## Future Plans
  
-1. Implement system to automatically search for pre-requisite recipies needed
-2. Upload all recipies to online database
-3. Convert to online database
+1. Implement search for pre-requisite recipies needed
+2. Make online database, change input/output names to items
