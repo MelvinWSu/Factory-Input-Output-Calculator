@@ -21,7 +21,6 @@ import fire from "./fire.js"
 const auth = getAuth()
 
 //todo: add "new recipe" button
-//add "clear storage" button
 
 export default class Comparison extends Component {
   constructor(props) {
@@ -189,9 +188,9 @@ export default class Comparison extends Component {
         outputs: this.state.outputs,
         crafting_time: this.state.crafting_time,
         crafting_time_units: this.state.crafting_time_units
-      }).then((snap) => { 
+      }).then((snap) => {
         console.log(snap.key)
-        this.setState({save_key: snap.key})
+        this.setState({ save_key: snap.key })
         alert("New recipe created")
       })
         .catch(() => {
@@ -222,10 +221,10 @@ export default class Comparison extends Component {
 
   }
 
- //todo: check if logout function clear top bar name
+  //todo: add exit confirmation (need to save?)
   logout_function() {
     auth.signOut().then(() => {
-      this.setState({login: null})
+      this.clear_local_storage()
       window.location.reload()
     })
   }
@@ -262,7 +261,7 @@ export default class Comparison extends Component {
             <h1 class="header">{this.state.title}</h1>
             <p>{this.state.save_key}</p>
             <Button value='edit' onClick={this.start_title_edit.bind(this)}>Edit</Button>
-            
+
           </div>
         </div>
       )
@@ -282,7 +281,7 @@ export default class Comparison extends Component {
 
   clear_local_storage() {
     window.localStorage.clear();
-    console.log(JSON.parse(localStorage.getItem("state")))
+
   }
 
   //todo, fix remove button spacing
