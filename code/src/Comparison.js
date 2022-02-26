@@ -13,22 +13,15 @@ import { getDatabase, ref, update, push } from "firebase/database";
 //firebase auth
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
-  setPersistence
 } from "firebase/auth";
 import fire from "./fire.js"
 
 //Global variables
 const auth = getAuth()
-var key = null
 
-//unsaved document, no key
-//push to firebaase
-//get entry key, set key
-//use update instead of push to save to firebase
+//todo: add "new recipe" button
+//add "clear storage" button
 
 export default class Comparison extends Component {
   constructor(props) {
@@ -36,12 +29,13 @@ export default class Comparison extends Component {
     this.state = JSON.parse(window.localStorage.getItem('state')) || {
       title: "Example Title",
       result: '',
-      inputs: ['',''],
+      inputs: ['', ''],
       outputs: [''],
       crafting_time: null,
       crafting_time_units: null,
       login: null,
       edit_mode: false,
+      save_key: null
     }
     this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -49,7 +43,7 @@ export default class Comparison extends Component {
   componentDidMount() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user)
+        //console.log(user)
         this.setState({ login: user.email })
       }
     });
@@ -185,28 +179,27 @@ export default class Comparison extends Component {
 
   //todo: add login check for upload
   //todo: add proper check for field inputs
-  //todo: get firebase key to allow updating instead of pushing
   uploadToFirebase() {
     const user = auth.currentUser;
     const db = getDatabase();
-    if (key === null) {
+    if (this.state.save_key === null) {
       push(ref(db, 'users/' + user.uid), {
         title: this.state.title,
         inputs: this.state.inputs,
         outputs: this.state.outputs,
         crafting_time: this.state.crafting_time,
         crafting_time_units: this.state.crafting_time_units
-      }).then((snap) => {
-        key = snap.key
-        console.log(key)
+      }).then((snap) => { 
+        console.log(snap.key)
+        this.setState({save_key: snap.key})
         alert("New recipe created")
       })
-      .catch(() => {
-        alert("Error")
-      })
+        .catch(() => {
+          alert("Error")
+        })
     }
     else {
-      update(ref(db, 'users/' + user.uid + '/' + key), {
+      update(ref(db, 'users/' + user.uid + '/' + this.state.save_key), {
         title: this.state.title,
         inputs: this.state.inputs,
         outputs: this.state.outputs,
@@ -215,16 +208,26 @@ export default class Comparison extends Component {
       }).then(() => {
         alert("Recipe updated")
       })
-      .catch(() =>{
-        alert("Error")
-      })
+        .catch(() => {
+          alert("Error")
+        })
     }
   }
 
-  
+  showSavedRecipies() {
 
+  }
+
+  loadSavedRecipe() {
+
+  }
+
+ //todo: check if logout function clear top bar name
   logout_function() {
-    auth.signOut().then(window.location.reload())
+    auth.signOut().then(() => {
+      this.setState({login: null})
+      window.location.reload()
+    })
   }
 
   render_dropdown() {
@@ -257,7 +260,9 @@ export default class Comparison extends Component {
         <div class="col-12">
           <div>
             <h1 class="header">{this.state.title}</h1>
+            <p>{this.state.save_key}</p>
             <Button value='edit' onClick={this.start_title_edit.bind(this)}>Edit</Button>
+            
           </div>
         </div>
       )
@@ -294,8 +299,8 @@ export default class Comparison extends Component {
               </Nav>
               <form class="form-inline my-2 my-lg-0">
                 <NavDropdown title={this.state.login} id="basic-nav-dropdown">
-                  <NavDropdown.Item >Account</NavDropdown.Item>
-                  <NavDropdown.Item >Save As</NavDropdown.Item>
+                  <NavDropdown.Item >New Recipe</NavDropdown.Item>
+                  <NavDropdown.Item onClick={this.uploadToFirebase.bind(this)}>Save</NavDropdown.Item>
                   <NavDropdown.Item >Load</NavDropdown.Item>
                   <NavDropdown.Divider />
                   {this.render_dropdown()}
@@ -338,7 +343,6 @@ export default class Comparison extends Component {
             </div>
           </div>
           <Button type="submit" value="Submit">Calculate</Button>
-          <Button onClick={this.uploadToFirebase.bind(this)}>Save to Firebase</Button>
         </form>
         <hr></hr>
         <div class="row">
