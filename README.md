@@ -38,6 +38,8 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 6.	Multiple output support
 7.	Multi-stage crafting
 
+https://trello.com/b/qOaZfIJB/factory-calculator
+
 ## Future Plans
  
 1. Implement system to automatically search for pre-requisite recipies needed
