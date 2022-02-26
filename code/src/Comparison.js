@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 //firebase database
-import { getDatabase, ref, set, push } from "firebase/database";
+import { getDatabase, ref, update, push } from "firebase/database";
 
 //firebase auth
 import {
@@ -23,6 +23,12 @@ import fire from "./fire.js"
 
 //Global variables
 const auth = getAuth()
+var key = null
+
+//unsaved document, no key
+//push to firebaase
+//get entry key, set key
+//use update instead of push to save to firebase
 
 export default class Comparison extends Component {
   constructor(props) {
@@ -30,7 +36,7 @@ export default class Comparison extends Component {
     this.state = JSON.parse(window.localStorage.getItem('state')) || {
       title: "Example Title",
       result: '',
-      inputs: ['', ''],
+      inputs: ['',''],
       outputs: [''],
       crafting_time: null,
       crafting_time_units: null,
@@ -174,26 +180,48 @@ export default class Comparison extends Component {
       console.log("all good")
       this.setState({ result: "all good" })
     }
-
     event.preventDefault();
   }
 
-  //todo: add login check
+  //todo: add login check for upload
   //todo: add proper check for field inputs
   //todo: get firebase key to allow updating instead of pushing
   uploadToFirebase() {
     const user = auth.currentUser;
     const db = getDatabase();
-
-    push(ref(db, 'users/' + user.uid), {
-      title: this.state.title,
-      inputs: this.state.inputs,
-      outputs: this.state.outputs,
-      crafting_time: this.state.crafting_time,
-      crafting_time_units: this.state.crafting_time_units
-    });
-    alert("Save successful")
+    if (key === null) {
+      push(ref(db, 'users/' + user.uid), {
+        title: this.state.title,
+        inputs: this.state.inputs,
+        outputs: this.state.outputs,
+        crafting_time: this.state.crafting_time,
+        crafting_time_units: this.state.crafting_time_units
+      }).then((snap) => {
+        key = snap.key
+        console.log(key)
+        alert("New recipe created")
+      })
+      .catch(() => {
+        alert("Error")
+      })
+    }
+    else {
+      update(ref(db, 'users/' + user.uid + '/' + key), {
+        title: this.state.title,
+        inputs: this.state.inputs,
+        outputs: this.state.outputs,
+        crafting_time: this.state.crafting_time,
+        crafting_time_units: this.state.crafting_time_units
+      }).then(() => {
+        alert("Recipe updated")
+      })
+      .catch(() =>{
+        alert("Error")
+      })
+    }
   }
+
+  
 
   logout_function() {
     auth.signOut().then(window.location.reload())
