@@ -5,10 +5,10 @@ import './Custom.css';
 import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
-import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown, modal } from 'react-bootstrap';
 
 //firebase database
-import { getDatabase, ref, update, push } from "firebase/database";
+import { getDatabase, ref, update, push, get, child } from "firebase/database";
 
 //firebase auth
 import {
@@ -34,7 +34,8 @@ export default class Comparison extends Component {
       crafting_time_units: null,
       login: null,
       edit_mode: false,
-      save_key: null
+      save_key: null,
+      loaded_recipes: null
     }
     this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -118,6 +119,17 @@ export default class Comparison extends Component {
         </div>
       </div>
     )
+  }
+
+  createRecipesEntry() {
+    return this.state.loaded_recipes.map(({},i) =>
+      <div clas="row" key={i}>
+        <div class="col-12">
+          
+        </div>
+      </div>
+    )
+    
   }
 
   handleChange(i, form_type, event) {
@@ -214,7 +226,23 @@ export default class Comparison extends Component {
   }
 
   showSavedRecipies() {
+    const db = ref(getDatabase())
+    const user = auth.currentUser;
 
+    const dbRef = ref(getDatabase());
+    get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          console.log(childSnapshot.key)
+          childSnapshot.forEach(element => console.log(element.key,':', element.val()))
+        })
+        this.setState({loaded_recipes: snapshot.val()});
+      } else {
+        console.log("No data available");
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   loadSavedRecipe() {
@@ -276,6 +304,7 @@ export default class Comparison extends Component {
   }
 
   check_local_storage() {
+    alert(JSON.parse(localStorage.getItem("state")))
     console.log(JSON.parse(localStorage.getItem("state")))
   }
 
@@ -289,6 +318,7 @@ export default class Comparison extends Component {
     return (
       ///Navbar
       <Container>
+
         <Navbar bg="light" expand="lg">
           <Container>
             <Navbar.Brand href="#home">Factory I/O Calculator</Navbar.Brand>
@@ -300,7 +330,7 @@ export default class Comparison extends Component {
                 <NavDropdown title={this.state.login} id="basic-nav-dropdown">
                   <NavDropdown.Item >New Recipe</NavDropdown.Item>
                   <NavDropdown.Item onClick={this.uploadToFirebase.bind(this)}>Save</NavDropdown.Item>
-                  <NavDropdown.Item >Load</NavDropdown.Item>
+                  <NavDropdown.Item onClick={this.showSavedRecipies.bind(this)}>Load</NavDropdown.Item>
                   <NavDropdown.Divider />
                   {this.render_dropdown()}
                 </NavDropdown>
@@ -354,6 +384,7 @@ export default class Comparison extends Component {
         </div>
         <Button onClick={this.check_local_storage.bind(this)}>Check local storage</Button>
         <Button onClick={this.clear_local_storage.bind(this)}>Clear local storage</Button>
+        {this.createRecipesEntry}
       </Container>
     );
   }
