@@ -1,11 +1,14 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Custom.css';
+import './bootstrap_defaults/bootstrap-theme.css'
+import './bootstrap_defaults/bootstrap-theme.min.css'
+
+import 'bootstrap/js/src/modal.js'
+import './Custom.css'
+
 
 //React
 import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
-import Button from 'react-bootstrap/Button'
-import { Nav, Navbar, NavDropdown, modal } from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 //firebase database
 import { getDatabase, ref, update, push, get, child } from "firebase/database";
@@ -19,8 +22,6 @@ import fire from "./fire.js"
 
 //Global variables
 const auth = getAuth()
-
-//todo: add "new recipe" button
 
 export default class Comparison extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ export default class Comparison extends Component {
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Input #{i}</span>
-          <Button class="text-right" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</Button>
+          <button class="btn btn-primary text-right" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</button>
         </div>
         <div class="col-4">
           <div class="input-group mb-3">
@@ -99,7 +100,7 @@ export default class Comparison extends Component {
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Output #{i}</span>
-          <Button class="text-right " value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</Button>
+          <button class="btn btn-primary text-right" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</button>
         </div>
         <div class="col-4">
           <div class="input-group mb-3">
@@ -122,14 +123,14 @@ export default class Comparison extends Component {
   }
 
   createRecipesEntry() {
-    return this.state.loaded_recipes.map(({},i) =>
+    return this.state.loaded_recipes.map(({ }, i) =>
       <div clas="row" key={i}>
         <div class="col-12">
-          
+
         </div>
       </div>
     )
-    
+
   }
 
   handleChange(i, form_type, event) {
@@ -172,7 +173,7 @@ export default class Comparison extends Component {
     this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
     alert("crafting_time: " + this.state.crafting_time + ' ' + this.state.crafting_time_units)
     this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.output_quanity));
-    var [input_array, output_array] = [this.state.inputs, this.state.outputs];
+    var [input_array] = [this.state.inputs];
     if (input_array.every(element => element.flow > this.state.crafting_time)) {
       console.log("output crafting too slow")
       this.setState({ result: "output crafting too slow" });
@@ -226,7 +227,6 @@ export default class Comparison extends Component {
   }
 
   showSavedRecipies() {
-    const db = ref(getDatabase())
     const user = auth.currentUser;
 
     const dbRef = ref(getDatabase());
@@ -234,9 +234,9 @@ export default class Comparison extends Component {
       if (snapshot.exists()) {
         snapshot.forEach((childSnapshot) => {
           console.log(childSnapshot.key)
-          childSnapshot.forEach(element => console.log(element.key,':', element.val()))
+          childSnapshot.forEach(element => console.log(element.key, ':', element.val()))
         })
-        this.setState({loaded_recipes: snapshot.val()});
+        this.setState({ loaded_recipes: snapshot.val() });
       } else {
         console.log("No data available");
       }
@@ -277,7 +277,7 @@ export default class Comparison extends Component {
         <div class="col-12">
           <div>
             <input autoComplete="off" name="title" value={this.state.title || ''} onChange={this.handleChange.bind(this, 0, "title")}></input>
-            <Button value='save' onClick={this.end_title_edit.bind(this)}>Save</Button>
+            <button class="btn btn-primary" value='save' onClick={this.end_title_edit.bind(this)}>Save</button>
           </div>
         </div>
       )
@@ -288,7 +288,7 @@ export default class Comparison extends Component {
           <div>
             <h1 class="header">{this.state.title}</h1>
             <p>{this.state.save_key}</p>
-            <Button value='edit' onClick={this.start_title_edit.bind(this)}>Edit</Button>
+            <button class="btn btn-primary" value='edit' onClick={this.start_title_edit.bind(this)}>Edit</button>
 
           </div>
         </div>
@@ -318,7 +318,6 @@ export default class Comparison extends Component {
     return (
       ///Navbar
       <Container>
-
         <Navbar bg="light" expand="lg">
           <Container>
             <Navbar.Brand href="#home">Factory I/O Calculator</Navbar.Brand>
@@ -330,7 +329,7 @@ export default class Comparison extends Component {
                 <NavDropdown title={this.state.login} id="basic-nav-dropdown">
                   <NavDropdown.Item >New Recipe</NavDropdown.Item>
                   <NavDropdown.Item onClick={this.uploadToFirebase.bind(this)}>Save</NavDropdown.Item>
-                  <NavDropdown.Item onClick={this.showSavedRecipies.bind(this)}>Load</NavDropdown.Item>
+                  <NavDropdown.Item data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={this.showSavedRecipies.bind(this)}>Load</NavDropdown.Item>
                   <NavDropdown.Divider />
                   {this.render_dropdown()}
                 </NavDropdown>
@@ -338,15 +337,16 @@ export default class Comparison extends Component {
             </Navbar.Collapse>
           </Container>
         </Navbar>
-
-        <div class="row">
-          {this.title_edit()}
-        </div>
+        <Container bg="light">
+          <div class="row">
+            {this.title_edit()}
+          </div>
+        </Container>
         <form onSubmit={this.handleSubmit}>
           {this.createInputEntry()}
           <div class="row">
             <div class="col-12">
-              <Button value='addinput' class="btn-success" onClick={this.addClick.bind(this, "input")}>Add Input</Button>
+              <button class="btn btn-primary" value='addinput' onClick={this.addClick.bind(this, "input")}>Add Input</button>
             </div>
           </div>
           <div class="row">
@@ -368,10 +368,10 @@ export default class Comparison extends Component {
           {this.createOutputEntry()}
           <div class="row">
             <div class="col-12">
-              <Button value='addoutput' onClick={this.addClick.bind(this, "output")}>Add Output</Button>
+              <button class="btn btn-primary" value='addoutput' onClick={this.addClick.bind(this, "output")}>Add Output</button>
             </div>
           </div>
-          <Button type="submit" value="Submit">Calculate</Button>
+          <button class="btn btn-primary" type="submit" value="Submit">Calculate</button>
         </form>
         <hr></hr>
         <div class="row">
@@ -382,9 +382,27 @@ export default class Comparison extends Component {
             {this.state.result}
           </div>
         </div>
-        <Button onClick={this.check_local_storage.bind(this)}>Check local storage</Button>
-        <Button onClick={this.clear_local_storage.bind(this)}>Clear local storage</Button>
+        <button type="button" class='btn btn-info' onClick={this.check_local_storage.bind(this)}>Check local storage</button>
+        <button type="button" class='btn btn-danger' onClick={this.clear_local_storage.bind(this)}>Clear local storage</button>
         {this.createRecipesEntry}
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                ...
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     );
   }
