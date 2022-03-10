@@ -23,6 +23,16 @@ import fire from "./fire.js"
 //Global variables
 const auth = getAuth()
 
+class timeConversion {
+  static Miliseconds = new timeConversion(1)
+  static Seconds = new timeConversion(1000)
+  static Minutes = new timeConversion(6000)
+
+  constructor(value) {
+    this.value = value
+  }
+}
+
 export default class Comparison extends Component {
   constructor(props) {
     super(props);
@@ -79,9 +89,9 @@ export default class Comparison extends Component {
             <span class="input-group-text" id="basic-addon">per</span>
             <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
-              <option value="1">Miliseconds</option>
-              <option value="2" >Seconds</option>
-              <option value="3">Minutes</option>
+              <option value="Miliseconds">Miliseconds</option>
+              <option value="Seconds" >Seconds</option>
+              <option value="Minutes">Minutes</option>
             </select>
           </div>
         </div>
@@ -122,17 +132,6 @@ export default class Comparison extends Component {
     )
   }
 
-  createRecipesEntry() {
-    return this.state.loaded_recipes.map(({ }, i) =>
-      <div clas="row" key={i}>
-        <div class="col-12">
-
-        </div>
-      </div>
-    )
-
-  }
-
   handleChange(i, form_type, event) {
     const { name, value } = event.target;
     if (form_type === "input") {
@@ -168,12 +167,10 @@ export default class Comparison extends Component {
     }
   }
   //todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
-  //todo: add proper check for field inputs, factor time units
+  //todo: add proper check for field inputs, factor time units (eval())
   handleSubmit(event) {
-    this.state.inputs.forEach(element => alert("Input: " + element.name + ' ' + element.flow + ' ' + element.flow_units + ' ' + element.needed));
-    alert("crafting_time: " + this.state.crafting_time + ' ' + this.state.crafting_time_units)
-    this.state.outputs.forEach(element => alert("Output: " + element.output_name + ' ' + element.output_quanity));
     var [input_array] = [this.state.inputs];
+    
     if (input_array.every(element => element.flow > this.state.crafting_time)) {
       console.log("output crafting too slow")
       this.setState({ result: "output crafting too slow" });
@@ -202,7 +199,6 @@ export default class Comparison extends Component {
         crafting_time: this.state.crafting_time,
         crafting_time_units: this.state.crafting_time_units
       }).then((snap) => {
-        console.log(snap.key)
         this.setState({ save_key: snap.key })
         alert("New recipe created")
       })
@@ -228,15 +224,14 @@ export default class Comparison extends Component {
 
   showSavedRecipies() {
     const user = auth.currentUser;
-
     const dbRef = ref(getDatabase());
+    var get_recipes = [];
     get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
       if (snapshot.exists()) {
         snapshot.forEach((childSnapshot) => {
-          console.log(childSnapshot.key)
-          childSnapshot.forEach(element => console.log(element.key, ':', element.val()))
+          get_recipes.push({ recipe_key: childSnapshot.key, title: childSnapshot.child('title').val() })
         })
-        this.setState({ loaded_recipes: snapshot.val() });
+        this.setState({ loaded_recipes: get_recipes });
       } else {
         console.log("No data available");
       }
@@ -245,8 +240,45 @@ export default class Comparison extends Component {
     });
   }
 
-  loadSavedRecipe() {
+  createRecipesEntry() {
+    if (this.state.loaded_recipes) {
+      return this.state.loaded_recipes.map(({ recipe_key, title }, i) =>
+        <div class="modal-body row key={i}">
+          <div class="col-md-8">
+            <button type="button" class="btn btn-link" onClick={this.loadSavedRecipe.bind(this, recipe_key)} data-bs-dismiss="modal">{recipe_key}</button>
+          </div>
+          <div class="col-md-4">
+            {title}
+          </div>
+        </div>
+      )
+    }
+  }
 
+  //todo: replace alert with toast
+  loadSavedRecipe(key_value) {
+    const user = auth.currentUser;
+    const dbRef = ref(getDatabase());
+
+    get(child(dbRef, `users/${user.uid}/${key_value}`)).then((snapshot) => {
+      if (snapshot.exists()) {
+        this.setState({
+          title: snapshot.child('title').val(),
+          result: null,
+          inputs: snapshot.child('inputs').val(),
+          outputs: snapshot.child('outputs').val(),
+          crafting_time: snapshot.child('crafting_time').val(),
+          crafting_time_units: snapshot.child('crafting_time_units').val(),
+          edit_mode: false,
+          save_key: key_value
+        })
+        alert("Load successful")
+      } else {
+        console.log("No data available");
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   //todo: add exit confirmation (need to save?)
@@ -289,7 +321,6 @@ export default class Comparison extends Component {
             <h1 class="header">{this.state.title}</h1>
             <p>{this.state.save_key}</p>
             <button class="btn btn-primary" value='edit' onClick={this.start_title_edit.bind(this)}>Edit</button>
-
           </div>
         </div>
       )
@@ -310,7 +341,6 @@ export default class Comparison extends Component {
 
   clear_local_storage() {
     window.localStorage.clear();
-
   }
 
   //todo, fix remove button spacing
@@ -318,6 +348,20 @@ export default class Comparison extends Component {
     return (
       ///Navbar
       <Container>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Load Recipe from Database</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              {this.createRecipesEntry()}
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <Navbar bg="light" expand="lg">
           <Container>
             <Navbar.Brand href="#home">Factory I/O Calculator</Navbar.Brand>
@@ -358,9 +402,9 @@ export default class Comparison extends Component {
                 <input autoComplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
                 <select class="form-select" name="crafting_time_units" value={this.state.crafting_time_units || ''} onChange={this.handleChange.bind(this, 0, "crafting_time_units")}>
                   <option>Choose...</option>
-                  <option value="1">Miliseconds</option>
-                  <option value="2">Seconds</option>
-                  <option value="3">Minutes</option>
+                  <option value="Miliseconds">Miliseconds</option>
+                  <option value="Seconds">Seconds</option>
+                  <option value="Minutes">Minutes</option>
                 </select>
               </div>
             </div>
@@ -384,25 +428,6 @@ export default class Comparison extends Component {
         </div>
         <button type="button" class='btn btn-info' onClick={this.check_local_storage.bind(this)}>Check local storage</button>
         <button type="button" class='btn btn-danger' onClick={this.clear_local_storage.bind(this)}>Clear local storage</button>
-        {this.createRecipesEntry}
-
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                ...
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </Container>
     );
   }
