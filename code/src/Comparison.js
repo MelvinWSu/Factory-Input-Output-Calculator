@@ -23,10 +23,12 @@ import fire from "./fire.js"
 //Global variables
 const auth = getAuth()
 
+//todo: quanity => quantity
+
 class timeConversion {
-  static Miliseconds = new timeConversion(1)
-  static Seconds = new timeConversion(1000)
-  static Minutes = new timeConversion(6000)
+  static Milisecond = new timeConversion(1)
+  static Second = new timeConversion(1000)
+  static Minute = new timeConversion(6000)
 
   constructor(value) {
     this.value = value
@@ -89,9 +91,9 @@ export default class Comparison extends Component {
             <span class="input-group-text" id="basic-addon">per</span>
             <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
-              <option value="Miliseconds">Miliseconds</option>
-              <option value="Seconds" >Seconds</option>
-              <option value="Minutes">Minutes</option>
+              <option value="Milisecond">Milisecond</option>
+              <option value="Second" >Second</option>
+              <option value="Minute">Minute</option>
             </select>
           </div>
         </div>
@@ -170,19 +172,26 @@ export default class Comparison extends Component {
   //todo: add proper check for field inputs, factor time units (eval())
   handleSubmit(event) {
     var [input_array] = [this.state.inputs];
-    
-    if (input_array.every(element => element.flow > this.state.crafting_time)) {
-      console.log("output crafting too slow")
-      this.setState({ result: "output crafting too slow" });
+    var output_string = [];
+    if (this.state.inputs !== null && this.state.outputs !== null) {
+      this.state.inputs.forEach(element => output_string.push("Input: " + element.name + "\nNeeded: " + element.needed + " item(s)\nFlow Rate: " + element.flow + " item(s)/" + element.flow_units))
+      output_string.push("")
+      this.state.outputs.forEach(element => output_string.push("Output: " + element.output_name + "\nProduces: " + element.output_quanity + " item(s)"))
+      output_string.push("Time to craft: " + this.state.crafting_time + " " + this.state.crafting_time_units)
+      output_string.push("")
+      if (input_array.every(element => element.flow > this.state.crafting_time)) {
+        output_string.push("Excessive input materials")
+      }
+      else if (input_array.some(element => element.flow < this.state.crafting_time)) {
+        output_string.push("An input has too few flow")
+      }
+      else {
+        output_string.push("Maximum efficency")
+      }
+      var combined = output_string.join('\n');
+      this.setState({ result: combined });
     }
-    else if (input_array.some(element => element.flow < this.state.crafting_time)) {
-      console.log("an input has too few flow")
-      this.setState({ result: "an input has too few flow" })
-    }
-    else {
-      console.log("all good")
-      this.setState({ result: "all good" })
-    }
+
     event.preventDefault();
   }
 
@@ -381,11 +390,11 @@ export default class Comparison extends Component {
             </Navbar.Collapse>
           </Container>
         </Navbar>
-        <Container bg="light">
-          <div class="row">
-            {this.title_edit()}
-          </div>
-        </Container>
+
+        <div class="row">
+          {this.title_edit()}
+        </div>
+
         <form onSubmit={this.handleSubmit}>
           {this.createInputEntry()}
           <div class="row">
@@ -402,9 +411,9 @@ export default class Comparison extends Component {
                 <input autoComplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
                 <select class="form-select" name="crafting_time_units" value={this.state.crafting_time_units || ''} onChange={this.handleChange.bind(this, 0, "crafting_time_units")}>
                   <option>Choose...</option>
-                  <option value="Miliseconds">Miliseconds</option>
-                  <option value="Seconds">Seconds</option>
-                  <option value="Minutes">Minutes</option>
+                  <option value="Milisecond">Milisecond</option>
+                  <option value="Second">Second</option>
+                  <option value="Minute">Minute</option>
                 </select>
               </div>
             </div>
@@ -423,7 +432,8 @@ export default class Comparison extends Component {
             <span class="h4">Result</span>
           </div>
           <div class="col-12">
-            {this.state.result}
+            <pre>{this.state.result}</pre>
+            
           </div>
         </div>
         <button type="button" class='btn btn-info' onClick={this.check_local_storage.bind(this)}>Check local storage</button>
