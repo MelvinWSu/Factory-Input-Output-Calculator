@@ -40,7 +40,8 @@ export default class Comparison extends Component {
     super(props);
     this.state = JSON.parse(window.localStorage.getItem('state')) || {
       title: "Example Title",
-      result: '',
+      basic_info: '',
+      calculated_results:'',
       inputs: ['', ''],
       outputs: [''],
       crafting_time: null,
@@ -168,7 +169,7 @@ export default class Comparison extends Component {
       this.setState({ outputs });
     }
   }
-  //todo: add proper calculations, iterate through output array, get specific inputs that cause bottleneck
+  //todo: add proper calculations, get specific inputs that cause bottleneck
   //todo: add proper check for field inputs, factor time units (eval())
   handleSubmit(event) {
     var [input_array] = [this.state.inputs];
@@ -177,8 +178,7 @@ export default class Comparison extends Component {
       this.state.inputs.forEach(element => output_string.push("Input: " + element.name + "\nNeeded: " + element.needed + " item(s)\nFlow Rate: " + element.flow + " item(s)/" + element.flow_units))
       output_string.push("")
       this.state.outputs.forEach(element => output_string.push("Output: " + element.output_name + "\nProduces: " + element.output_quanity + " item(s)"))
-      output_string.push("Time to craft: " + this.state.crafting_time + " " + this.state.crafting_time_units)
-      output_string.push("")
+      output_string.push("Time to craft: " + this.state.crafting_time + " " + this.state.crafting_time_units + "\n")
       if (input_array.every(element => element.flow > this.state.crafting_time)) {
         output_string.push("Excessive input materials")
       }
@@ -189,10 +189,17 @@ export default class Comparison extends Component {
         output_string.push("Maximum efficency")
       }
       var combined = output_string.join('\n');
-      this.setState({ result: combined });
+      this.setState({ basic_info: combined });
     }
 
     event.preventDefault();
+  }
+
+  calculateRateDifference(input) {
+    if ((input.flow / 1 * input.flow_units) - (input.needed / this.state.crafting_time * this.state.crafting_time_units) > 0) {
+      
+      return true;
+    }
   }
 
   //todo: add login check for upload
@@ -273,7 +280,7 @@ export default class Comparison extends Component {
       if (snapshot.exists()) {
         this.setState({
           title: snapshot.child('title').val(),
-          result: null,
+          basic_info: null,
           inputs: snapshot.child('inputs').val(),
           outputs: snapshot.child('outputs').val(),
           crafting_time: snapshot.child('crafting_time').val(),
@@ -429,11 +436,11 @@ export default class Comparison extends Component {
         <hr></hr>
         <div class="row">
           <div class="col-12">
-            <span class="h4">Result</span>
+            <span class="h4">Results</span>
           </div>
           <div class="col-12">
-            <pre>{this.state.result}</pre>
-            
+          <pre>{this.state.basic_info}</pre>
+          <pre>{this.state.calculated_results}</pre>
           </div>
         </div>
         <button type="button" class='btn btn-info' onClick={this.check_local_storage.bind(this)}>Check local storage</button>
