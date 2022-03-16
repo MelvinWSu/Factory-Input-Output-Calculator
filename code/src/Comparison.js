@@ -25,14 +25,10 @@ const auth = getAuth()
 
 //todo: quanity => quantity
 
-class timeConversion {
-  static Milisecond = new timeConversion(1)
-  static Second = new timeConversion(1000)
-  static Minute = new timeConversion(6000)
-
-  constructor(value) {
-    this.value = value
-  }
+var timeConversion = {
+  Milisecond: 1,
+  Second: 1000,
+  Minute: 6000
 }
 
 export default class Comparison extends Component {
@@ -41,7 +37,7 @@ export default class Comparison extends Component {
     this.state = JSON.parse(window.localStorage.getItem('state')) || {
       title: "Example Title",
       basic_info: '',
-      calculated_results:'',
+      calculated_results: '',
       inputs: ['', ''],
       outputs: [''],
       crafting_time: null,
@@ -169,37 +165,82 @@ export default class Comparison extends Component {
       this.setState({ outputs });
     }
   }
-  //todo: add proper calculations, get specific inputs that cause bottleneck
+
+  calculateRateDifference(input) {
+    /*
+    console.log("Input flow: " + input.flow)
+    console.log("Input flow units: " + timeConversion[input.flow_units])
+    console.log("Input needed: " + input.needed)
+    console.log("Crafting time: " + this.state.crafting_time)
+    console.log("Crafting time units: " + timeConversion[this.state.crafting_time_units])
+    */
+    let calc = (input.flow / 1 * timeConversion[input.flow_units]) - (input.needed / this.state.crafting_time * timeConversion[this.state.crafting_time_units])
+    return calc;
+  }
+
+  //todo: optimize: store calc_results as {result, id} and sort by results, do comparisons with sorted list to save computing time
   //todo: add proper check for field inputs, factor time units (eval())
   handleSubmit(event) {
-    var [input_array] = [this.state.inputs];
-    var output_string = [];
+    let [input_array] = [this.state.inputs];
+    let output_string = [];
+    let calc_results = [];
     if (this.state.inputs !== null && this.state.outputs !== null) {
       this.state.inputs.forEach(element => output_string.push("Input: " + element.name + "\nNeeded: " + element.needed + " item(s)\nFlow Rate: " + element.flow + " item(s)/" + element.flow_units))
       output_string.push("")
       this.state.outputs.forEach(element => output_string.push("Output: " + element.output_name + "\nProduces: " + element.output_quanity + " item(s)"))
       output_string.push("Time to craft: " + this.state.crafting_time + " " + this.state.crafting_time_units + "\n")
-      if (input_array.every(element => element.flow > this.state.crafting_time)) {
-        output_string.push("Excessive input materials")
-      }
-      else if (input_array.some(element => element.flow < this.state.crafting_time)) {
-        output_string.push("An input has too few flow")
+      input_array.forEach(element => calc_results.push(this.calculateRateDifference(element)))
+
+      let iter = 0;
+      calc_results.forEach(element => {
+        if (element !== 0) {
+          if (element < 0) {
+            if (Math.abs(element) >= 6000) {
+              output_string.push(this.state.inputs[iter].name + ": " + element / 6000 + "/Minute deficit");
+            }
+            else if (Math.abs(element) >= 1000) {
+              output_string.push(this.state.inputs[iter].name + ": " + element / 1000 + "/Second deficit");
+            }
+            else {
+              output_string.push(this.state.inputs[iter].name + ": " + element + "/Milisecond deficit");
+            }
+          }
+          else {
+            if (element >= 6000) {
+              output_string.push(this.state.inputs[iter].name + ": " + element / 6000 + "/Minute surplus");
+            }
+            else if (element >= 1000) {
+              output_string.push(this.state.inputs[iter].name + ": " + element / 1000 + "/Second surplus");
+            }
+            else {
+              output_string.push(this.state.inputs[iter].name + ": " + element + "/Milisecond surplus");
+            }
+          }
+        }
+        else {
+          output_string.push(this.state.inputs[iter].name + ": Just enough")
+        }
+        iter++;
+      })
+
+      if (calc_results.every(element => element === 0)) {
+        output_string.push("Perfect flow")
       }
       else {
-        output_string.push("Maximum efficency")
+        output_string.push("")
+        if (calc_results.every(element => element >= 0)) {
+          output_string.push("Excessive input materials")
+        }
+        else {
+          output_string.push("Not enough input materials")
+        }
       }
+
+
       var combined = output_string.join('\n');
       this.setState({ basic_info: combined });
     }
-
     event.preventDefault();
-  }
-
-  calculateRateDifference(input) {
-    if ((input.flow / 1 * input.flow_units) - (input.needed / this.state.crafting_time * this.state.crafting_time_units) > 0) {
-      
-      return true;
-    }
   }
 
   //todo: add login check for upload
@@ -259,7 +300,7 @@ export default class Comparison extends Component {
   createRecipesEntry() {
     if (this.state.loaded_recipes) {
       return this.state.loaded_recipes.map(({ recipe_key, title }, i) =>
-        <div class="modal-body row key={i}">
+        <div class="modal-body row" key={i}>
           <div class="col-md-8">
             <button type="button" class="btn btn-link" onClick={this.loadSavedRecipe.bind(this, recipe_key)} data-bs-dismiss="modal">{recipe_key}</button>
           </div>
@@ -439,8 +480,8 @@ export default class Comparison extends Component {
             <span class="h4">Results</span>
           </div>
           <div class="col-12">
-          <pre>{this.state.basic_info}</pre>
-          <pre>{this.state.calculated_results}</pre>
+            <pre>{this.state.basic_info}</pre>
+            <pre>{this.state.calculated_results}</pre>
           </div>
         </div>
         <button type="button" class='btn btn-info' onClick={this.check_local_storage.bind(this)}>Check local storage</button>
