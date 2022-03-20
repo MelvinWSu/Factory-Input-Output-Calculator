@@ -1,0 +1,3 @@
+Reference Documents:
+Recipies
+1. https://wiki.factorio.com/Electronic_circuit
