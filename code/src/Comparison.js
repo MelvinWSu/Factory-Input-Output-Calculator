@@ -3,7 +3,7 @@ import './bootstrap_defaults/bootstrap-theme.min.css'
 
 import 'bootstrap/js/src/modal.js'
 import './Custom.css'
-
+import"./fire.js"
 
 //React
 import React, { Component } from 'react';
@@ -18,12 +18,10 @@ import {
   getAuth,
   onAuthStateChanged,
 } from "firebase/auth";
-import fire from "./fire.js"
+
 
 //Global variables
 const auth = getAuth()
-
-//todo: quanity => quantity
 
 var timeConversion = {
   Milisecond: 1,
@@ -105,7 +103,7 @@ export default class Comparison extends Component {
   }
 
   createOutputEntry() {
-    return this.state.outputs.map(({ output_name, output_quanity }, i) =>
+    return this.state.outputs.map(({ output_name, output_quantity }, i) =>
       <div class="row" key={i}>
         <div class="col-12">
           <span class="header h4">Output #{i}</span>
@@ -124,7 +122,7 @@ export default class Comparison extends Component {
             <div class="input-group-prepend">
               <span class="input-group-text" id="basic-addon">Quantity</span>
             </div>
-            <input autoComplete="off" type="number" name="output_quanity" value={output_quanity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input autoComplete="off" type="number" name="output_quantity" value={output_quantity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
       </div>
@@ -187,7 +185,7 @@ export default class Comparison extends Component {
     if (this.state.inputs !== null && this.state.outputs !== null) {
       this.state.inputs.forEach(element => output_string.push("Input: " + element.name + "\nNeeded: " + element.needed + " item(s)\nFlow Rate: " + element.flow + " item(s)/" + element.flow_units))
       output_string.push("")
-      this.state.outputs.forEach(element => output_string.push("Output: " + element.output_name + "\nProduces: " + element.output_quanity + " item(s)"))
+      this.state.outputs.forEach(element => output_string.push("Output: " + element.output_name + "\nProduces: " + element.output_quantity + " item(s)"))
       output_string.push("Time to craft: " + this.state.crafting_time + " " + this.state.crafting_time_units + "\n")
       input_array.forEach(element => calc_results.push(this.calculateRateDifference(element)))
 
@@ -346,7 +344,7 @@ export default class Comparison extends Component {
     })
   }
 
-  render_dropdown() {
+  render_login() {
     const user = auth.currentUser;
     if (user !== null) {
       return (
@@ -376,7 +374,6 @@ export default class Comparison extends Component {
         <div class="col-12">
           <div>
             <h1 class="header">{this.state.title}</h1>
-            <p>{this.state.save_key}</p>
             <button class="btn btn-primary" value='edit' onClick={this.start_title_edit.bind(this)}>Edit</button>
           </div>
         </div>
@@ -431,8 +428,9 @@ export default class Comparison extends Component {
                   <NavDropdown.Item >New Recipe</NavDropdown.Item>
                   <NavDropdown.Item onClick={this.uploadToFirebase.bind(this)}>Save</NavDropdown.Item>
                   <NavDropdown.Item data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={this.showSavedRecipies.bind(this)}>Load</NavDropdown.Item>
+                  <NavDropdown.Item href="/test">Test Page</NavDropdown.Item>
                   <NavDropdown.Divider />
-                  {this.render_dropdown()}
+                  {this.render_login()}
                 </NavDropdown>
               </form>
             </Navbar.Collapse>
