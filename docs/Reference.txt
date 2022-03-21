@@ -10,5 +10,8 @@ https://getbootstrap.com/docs/5.1/getting-started/introduction/
 Firebase API Reference
 https://firebase.google.com/docs/reference
 
+Raphael Docs
+https://dmitrybaranovskiy.github.io/raphael/reference.html
+
 In-game Recipies
 1. https://wiki.factorio.com/Electronic_circuit
