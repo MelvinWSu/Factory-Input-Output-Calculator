@@ -16,6 +16,14 @@ import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
-export default class CodeTest extends Component {
+import Flow from './ExampleFlow'
 
+export default class CodeTest extends Component {
+    render() {
+        return (
+            <Container>
+                <Flow style/>
+            </Container>
+        )
+    }
 }
