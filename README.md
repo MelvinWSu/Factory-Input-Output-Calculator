@@ -19,14 +19,12 @@ Factorio and Satisfactory are factory-building games. The flow of the game is to
 •	React Bootstrap (Front-end framework)
 
 • Javascript/JSX (Back-end framework)
- 
-• React Hooks (dynamic forms)
 
 •	Sass
 
 •	Firebase (Realtime Database, FirebaseUI)
 
-•	Some kind of flowchart API (Output results in an easy to interpet format)
+•	React Flow (Flowchart)
 
 ## Development Steps
 
