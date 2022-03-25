@@ -12,20 +12,20 @@ second section - input/calculation focus
 */
 
 //React
-import React, { Component } from 'react';
+import React from 'react';
 import Container from 'react-bootstrap/Container'
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 import Flow from './ExampleFlow'
 import Flow1 from './ExampleFlow1'
 
-export default class CodeTest extends Component {
-    render() {
-        return (
-            <Container>
-                <Flow style/>
-                <Flow1 style/>
-            </Container>
-        )
-    }
+function CodeTest() {
+    return (
+        <Container>
+            <Flow style />
+            <Flow1 style />
+        </Container>
+    );
 }
+
+export default CodeTest
