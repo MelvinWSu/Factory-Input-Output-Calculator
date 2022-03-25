@@ -1,58 +1,54 @@
 import { useState } from 'react';
 import ReactFlow, {Position} from 'react-flow-renderer';
 
-const width = 400
-const height = 400
+const origin_x = 0
+const origin_y = 0
 
 const initialNodes = [
-  {
-    id: 'group1',
-    data: { label: 'Crafting (Time)'},
-    position: {x: 0, y: 0},
-    className: 'light',
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-    style: { backgroundColor: 'rgba(255, 0, 0, 0.2)', width: width, height: height}
-  },
   {
     id: '1',
     type: 'output',
     data: { label: 'Final Item' },
-    position: { x: width - 175, y: height - 200},
+    position: { x: origin_x + 200, y: origin_y},
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
-    parentNode: 'group1'
   },
   {
     id: '2',
     type: 'input',
     data: { label: <div>Item 1</div> },
-    position: { x: width - 375, y: height - 250 },
+    position: { x: origin_x - 200, y: origin_y - 50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
-    parentNode: 'group1'
   },
   {
     id: '3',
     type: 'input',
     data: { label: 'Item 2' },
-    position: { x: width - 375, y: height - 150 },
+    position: { x: origin_x - 200, y: origin_y + 50 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
-    parentNode: 'group1'
+  },
+  {
+    id: '4',
+    data: { label: 'Crafting (Time)' },
+    position: { x: origin_x, y: origin_y },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
   },
 ];
 
 const initialEdges = [
-  { id: 'e1-2', source: '2', target: '1', type: 'smoothstep', },
-  { id: 'e1-3', source: '3', target: '1', animated: true, type: 'smoothstep', },
+  { id: 'e2-4', source: '2', target: '4', type: 'smoothstep', },
+  { id: 'e3-4', source: '3', target: '4', animated: true, type: 'smoothstep', },
+  { id: 'e4-1', source: '4', target: '1', type: 'smoothstep',},
 ];
 
-function Flow() {
+function Flow1() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
 
   return <ReactFlow style={{width:500, height:500}} nodes={nodes} edges={edges} fitView />;
 }
 
-export default Flow;
+export default Flow1;
