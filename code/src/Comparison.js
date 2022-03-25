@@ -3,7 +3,7 @@ import './bootstrap_defaults/bootstrap-theme.min.css'
 
 import 'bootstrap/js/src/modal.js'
 import './Custom.css'
-import"./fire.js"
+import "./fire.js"
 
 //React
 import React, { Component } from 'react';
@@ -65,25 +65,25 @@ export default class Comparison extends Component {
   createInputEntry() {
     return this.state.inputs.map(({ name, flow, flow_units, needed }, i) =>
       <div class="row" key={i}>
-        <div class="col-12">
+        <div class="col-xs-12">
           <span class="header h4">Input #{i}</span>
-          <button class="btn btn-primary text-right" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</button>
+          <button class="btn btn-primary float-end" value='remove' onClick={this.removeClick.bind(this, i, "input")}>Remove</button>
         </div>
-        <div class="col-4">
-          <div class="input-group mb-3">
+        <div class="col-xs-4 col-md-4">
+          <div class="input-group">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon">Name</span>
+              <span class="input-group-text" id="basic-addon1">Name</span>
             </div>
-            <input autoComplete="off" type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <input class="form-control" autoComplete="off" type="text" name="name" value={name || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
-        <div class="col-4">
-          <div class="input-group mb-3">
+        <div class="col-xs-4 col-md-4">
+          <div class="input-group">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon">Flow</span>
+              <span class="input-group-text" id="basic-addon2">Flow</span>
             </div>
-            <input autoComplete="off" type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
-            <span class="input-group-text" id="basic-addon">per</span>
+            <input class="form-control" autoComplete="off" type="number" name="flow" value={flow || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+            <span class="input-group-text" id="basic-addon3">per</span>
             <select class="form-select" name="flow_units" value={flow_units || ''} onChange={this.handleChange.bind(this, i, "input")}>
               <option >Choose...</option>
               <option value="Milisecond">Milisecond</option>
@@ -92,10 +92,10 @@ export default class Comparison extends Component {
             </select>
           </div>
         </div>
-        <div class="col-4">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon"># Needed</span>
-            <input autoComplete="off" type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
+        <div class="col-xs-4 col-md-4">
+          <div class="input-group">
+            <span class="input-group-text" id="basic-addon4"># Needed</span>
+            <input class="form-control" autoComplete="off" type="number" name="needed" value={needed || ''} onChange={this.handleChange.bind(this, i, "input")} required></input>
           </div>
         </div>
       </div>
@@ -105,24 +105,24 @@ export default class Comparison extends Component {
   createOutputEntry() {
     return this.state.outputs.map(({ output_name, output_quantity }, i) =>
       <div class="row" key={i}>
-        <div class="col-12">
+        <div class="col-xs-12">
           <span class="header h4">Output #{i}</span>
-          <button class="btn btn-primary text-right" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</button>
+          <button class="btn btn-primary float-end" value='remove' onClick={this.removeClick.bind(this, i, "output")}>Remove</button>
         </div>
-        <div class="col-4">
-          <div class="input-group mb-3">
+        <div class="col-xs-4 col-md-4">
+          <div class="input-group">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon">Name</span>
+              <span class="input-group-text" id="basic-addon5">Name</span>
             </div>
-            <input autoComplete="off" type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input class="form-control" autoComplete="off" type="text" name="output_name" value={output_name || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
-        <div class="col-4">
-          <div class="input-group mb-3">
+        <div class="col-xs-4 col-md-4">
+          <div class="input-group">
             <div class="input-group-prepend">
-              <span class="input-group-text" id="basic-addon">Quantity</span>
+              <span class="input-group-text" id="basic-addon6">Quantity</span>
             </div>
-            <input autoComplete="off" type="number" name="output_quantity" value={output_quantity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
+            <input class="form-control" autoComplete="off" type="number" name="output_quantity" value={output_quantity || ''} onChange={this.handleChange.bind(this, i, "output")} required></input>
           </div>
         </div>
       </div>
@@ -363,7 +363,8 @@ export default class Comparison extends Component {
       return (
         <div class="col-12">
           <div>
-            <input autoComplete="off" name="title" value={this.state.title || ''} onChange={this.handleChange.bind(this, 0, "title")}></input>
+            <input class="form-control" autoComplete="off" name="title" value={this.state.title || ''} onChange={this.handleChange.bind(this, 0, "title")}></input>
+            <hr />
             <button class="btn btn-primary" value='save' onClick={this.end_title_edit.bind(this)}>Save</button>
           </div>
         </div>
@@ -444,17 +445,17 @@ export default class Comparison extends Component {
         <form onSubmit={this.handleSubmit}>
           {this.createInputEntry()}
           <div class="row">
-            <div class="col-12">
+            <div class="col-xs-12">
               <button class="btn btn-primary" value='addinput' onClick={this.addClick.bind(this, "input")}>Add Input</button>
             </div>
           </div>
           <div class="row">
-            <div class="col-4">
-              <div class="input-group mb-3">
+            <div class="col-xs-4  col-md-4">
+              <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Crafting Time</span>
                 </div>
-                <input autoComplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
+                <input class="form-control" autoComplete="off" type="number" name="crafting_time" value={this.state.crafting_time || ''} onChange={this.handleChange.bind(this, 0, "crafting_time")} required></input>
                 <select class="form-select" name="crafting_time_units" value={this.state.crafting_time_units || ''} onChange={this.handleChange.bind(this, 0, "crafting_time_units")}>
                   <option>Choose...</option>
                   <option value="Milisecond">Milisecond</option>
@@ -466,18 +467,18 @@ export default class Comparison extends Component {
           </div>
           {this.createOutputEntry()}
           <div class="row">
-            <div class="col-12">
+            <div class="col-xs-12">
               <button class="btn btn-primary" value='addoutput' onClick={this.addClick.bind(this, "output")}>Add Output</button>
             </div>
           </div>
           <button class="btn btn-primary" type="submit" value="Submit">Calculate</button>
         </form>
-        <hr></hr>
+        <hr />
         <div class="row">
-          <div class="col-12">
+          <div class="col-xs-12">
             <span class="h4">Results</span>
           </div>
-          <div class="col-12">
+          <div class="col-xs-12">
             <pre>{this.state.basic_info}</pre>
             <pre>{this.state.calculated_results}</pre>
           </div>
