@@ -18,7 +18,7 @@ const initialNodes = [
     id: '1',
     type: 'output',
     data: { label: 'Final Item' },
-    position: { x: width - 175, y: height - 200},
+    position: { x: width - 175, y: height - 220},
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
     parentNode: 'group1'
@@ -27,7 +27,7 @@ const initialNodes = [
     id: '2',
     type: 'input',
     data: { label: <div>Item 1</div> },
-    position: { x: width - 375, y: height - 250 },
+    position: { x: width - 375, y: height - 270 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
     parentNode: 'group1'
@@ -36,7 +36,7 @@ const initialNodes = [
     id: '3',
     type: 'input',
     data: { label: 'Item 2' },
-    position: { x: width - 375, y: height - 150 },
+    position: { x: width - 375, y: height - 170 },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
     parentNode: 'group1'

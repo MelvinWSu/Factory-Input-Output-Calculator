@@ -176,6 +176,8 @@ export default class Comparison extends Component {
     return calc;
   }
 
+  //todo: add the following function to the calculator: output the time  and number of items you can craft  given the number of input material
+  //calculate the time and input items needed given a number of desired number
   //todo: optimize: store calc_results as {result, id} and sort by results, do comparisons with sorted list to save computing time
   //todo: add proper check for field inputs, factor time units (eval())
   handleSubmit(event) {
