@@ -9,6 +9,9 @@ import './Custom.css';
 import Comparison from './Comparison';
 import SignInScreen from './firebaseui';
 import CodeTest from './CodeTest'
+import CreateItemPage from './CreateItemPage'
+import CreateRecipePage from './CreateRecipePage'
+
 
 import {
   BrowserRouter as Router,
@@ -23,6 +26,8 @@ export default function App() {
       <Routes>
         <Route exact path="/" element={<Comparison/>} />
         <Route path = "/signin" element={<SignInScreen/>}/>
+        <Route path = "/createItem" element={<CreateItemPage/>}/>
+        <Route path = "/createRecipe" element={<CreateRecipePage/>}/>
         <Route path = "/test" element={<CodeTest/>}/>
       </Routes>
     </Router>

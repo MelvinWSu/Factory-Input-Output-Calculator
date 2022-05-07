@@ -432,6 +432,8 @@ export default class Comparison extends Component {
                   <NavDropdown.Item onClick={this.uploadToFirebase.bind(this)}>Save</NavDropdown.Item>
                   <NavDropdown.Item data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={this.showSavedRecipies.bind(this)}>Load</NavDropdown.Item>
                   <NavDropdown.Item href="/test">Test Page</NavDropdown.Item>
+                  <NavDropdown.Item href="/createItem">Create Item Page</NavDropdown.Item>
+                  <NavDropdown.Item href="/createRecipe">Create Recipe Page</NavDropdown.Item>
                   <NavDropdown.Divider />
                   {this.render_login()}
                 </NavDropdown>

@@ -1,0 +1,1 @@
+//Todo: move header bar code from Comparison.js to here
